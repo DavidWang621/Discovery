@@ -4,24 +4,36 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 function MapView(props) {
+    const nameChange = (country) => {
+        console.log(country);
+    };
 
-    // countryStyle = {
-    //     fillColor: "red",
-    //     fillOpacity: 1,
-    //     color: "black",
-    //     weight: 2,
-    // };
+    const onEachCountry = (country, layer) => {
+        const countryName = country.properties.name;
+        // layer.bindTooltip(country.properties.name,
+        // {permanent: true, direction:"center",className: "label"}
+        // ).openTooltip();
+        layer.bindPopup(countryName);
+        layer.options.fillOpacity = 0.4;
 
-    console.log(props.file.features);
+        layer.on({
+            click: nameChange
+        });
+    };
+
     return (
         <div>
-            {/* {JSON.stringify(props.file)} */}
+            {props.file.features ?
+            <div>
             <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]} >
-                <GeoJSON
-                    data={props.file.features}
-                    // onEachFeature={this.onEachCountry}
+                <GeoJSON 
+                    data={props.file.features} onEachFeature={onEachCountry}
                 />
             </MapContainer>
+            </div>
+            : 
+            <></>
+            }
         </div>
     )
 }
