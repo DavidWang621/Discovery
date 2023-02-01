@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import MapView from './components/MapView';
 
 function App() {
+  const [fileExist, setFileExist] = useState(false);
+  const [GeoJson, setGeoJson] = useState({});
+
+  const handleSelectFile = (e) => {
+    const reader = new FileReader();
+    reader.readAsText(e.target.files[0]);
+    reader.onload = e => {
+      setGeoJson(JSON.parse(e.target.result));
+    }
+    setFileExist(true);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>Imput geo.json File</div>
+      <input type="file" accept="geo.json" onChange={handleSelectFile}/>
+      {fileExist ? <MapView file = {GeoJson}/> : <></>}
     </div>
   );
 }
