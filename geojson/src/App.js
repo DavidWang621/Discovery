@@ -8,6 +8,7 @@ function App() {
 
   const handleSelectFile = (e) => {
     const reader = new FileReader();
+    setGeoJson({});
     reader.readAsText(e.target.files[0]);
     reader.onload = e => {
       setGeoJson(JSON.parse(e.target.result));
