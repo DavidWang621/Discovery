@@ -12,7 +12,7 @@ function MapView(props) {
 
         let newCountry = prompt("Input new region name:", layer.feature.properties.name);
         props.changeName(layer.feature.properties.name, newCountry);
-        llayer.bindTooltip(layer.feature.properties.name,
+        layer.bindTooltip(layer.feature.properties.name,
             {permanent: true, direction:"center",className: "label"}
             ).openTooltip();
     };
