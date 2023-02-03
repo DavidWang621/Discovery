@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, useMap, GeoJSON } from 'react-leaflet';
-import L from 'leaflet';
+import React, {useState, useEffect, useRef} from 'react';
+import { MapContainer, TileLayer, useMap, GeoJSON, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+
 
 function MapView(props) {
     const [isPopup, setPopup] = useState(false);
@@ -30,18 +30,52 @@ function MapView(props) {
         });
     };
 
+
     return (
         <div>
             {props.file.features ?
             <div>
-                <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]} >
-                    <GeoJSON 
-                        data={props.file.features} 
-                        onEachFeature={onEachCountry}
-                    />
-                </MapContainer>
+
+
+                    <MapContainer
+                        style={{ height: "80vh" }} zoom={2} center={[20, 100]}
+                        editable={true}
+                    >
+                        <TileLayer url="xxx" />
+
+                        <LayerGroup>
+                            <TileLayer
+                                attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            <TileLayer url="http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png" />
+                        </LayerGroup>
+
+                                <GeoJSON
+                                    data={props.file.features}
+                                    onEachFeature={onEachCountry}
+                                />
+
+                    </MapContainer>
+
+
+                {/*<ReactLeafletEditable*/}
+                {/*    ref={editRef}*/}
+                {/*    map={map}*/}
+                {/*>*/}
+                {/*    <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]}*/}
+                {/*                  editable={true}>*/}
+                {/*        <GeoJSON*/}
+                {/*            data={props.file.features}*/}
+                {/*            onEachFeature={onEachCountry}*/}
+                {/*        />*/}
+                {/*    </MapContainer>*/}
+                {/*</ReactLeafletEditable>*/}
+
+
+
             </div>
-            : 
+            :
             <></>
             }
         </div>
