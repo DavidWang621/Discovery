@@ -13,6 +13,8 @@ function App() {
 
     const names = [];
     let count = 0;
+    let shpfile = null;
+  let dbffile = null;
 
 
     const readShapefile = (e) => {
@@ -87,23 +89,32 @@ function App() {
         })
     }
 
+    const handleSubmit = (e) => {
+        {
+          if(shpfile!=null&&dbffile!=null){
+            const reader = new FileReader();
+            setGeoJson({});
+            reader.readAsArrayBuffer(shpfile);
+            reader.onload = async e => {
+              await readShapefile(reader.result)
+            }
+            console.log("shp file read")
+          }
+          
+      }}
+
 
 
     const handleSelectFile = (e) => {
         {
-            //this is for shapefile
-            const reader = new FileReader();
-            setGeoJson({});
-            reader.readAsArrayBuffer(e.target.files[0])
-            reader.onload = async e => {
-                await readShapefile(reader.result)
-            }
+            shpfile = e.target.files[0];
+      
             console.log("shp file read")
         }
     }
     const handleSelectFile2 = (e) => {
         {
-
+            dbffile = e.target.files[0];
             //this is for shapefile
             const reader = new FileReader();
 
@@ -147,13 +158,16 @@ function App() {
                 <input type="file" accept="geo.json" onChange={handleSelectFile} />
 
             </div>
-            <div>upload shape second
+            <div>Upload Both dbf and shapefile and click submit.</div>
+            <div>Shapefile: 
                 <input type="file" accept="geo.json" onChange={handleSelectFile}/>
             </div>
-            <div>upload dbf first
+            <div>Dbf: 
                 <input type="file" accept="geo.json" onChange={handleSelectFile2}/>
 
             </div>
+            <div></div>
+            <div> Submit: <input type="submit" value="submit" onClick={handleSubmit} /></div>
 
 
             {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
