@@ -65,18 +65,18 @@ function App() {
             ).then(function (e){
             e.read().then(
                 function next(result){
+                    console.log(result)
                     if(result.value)
                     {
-                        names[count]=result.value.NAME_1;
+                        names[count]=result.value.NAME_ISO;
                         count++;
                     }
                     if(!result.done){
                         e.read().then(next)
                     }
                     else{
-
+                        console.log("done with name")
                         console.log(names);
-
                     }
                 })
         })
