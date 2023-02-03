@@ -16,6 +16,9 @@ function App() {
   const readShapefile = (e) => {
     //can only upload shp file but not zip file for now
     let res = [];
+    let empty = {}
+    empty.type = "FeatureCollection"
+    empty.features = res
     shapefile
         .open(
             e,
@@ -25,15 +28,21 @@ function App() {
       e.read().then(
           function next(result){
             if(result.value)
-              res.push(result.value)
+            {
+              console.log("in progress")
+              empty.features.push(result.value)
+            }
             if(!result.done){
               e.read().then(next)
             }
+            else{
+              console.log("done")
+              console.log(JSON.stringify(empty))
+              setGeoJson(empty)
+              setFileExist(true);
+            }
           })
     })
-    console.log("finish shpfile")
-    console.log(res)
-    return res
   }
 
 
@@ -57,9 +66,8 @@ function App() {
       setGeoJson({});
       reader.readAsArrayBuffer(e.target.files[0])
       reader.onload = async e => {
-        await readShapefile(reader.result)
+         await readShapefile(reader.result)
       }
-      setFileExist(true);
       console.log("shp file read")
   }
   }
