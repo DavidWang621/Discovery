@@ -32,11 +32,9 @@ function App() {
                 function next(result){
                     if(result.value)
                     {
-                        console.log("in progress")
-
                         result.value.properties.name = names[count];
                         count++;
-                        console.log(result.value);
+                        // console.log(result.value);
                         empty.features.push(result.value)
                     }
                     if(!result.done){
@@ -68,7 +66,14 @@ function App() {
                     console.log(result)
                     if(result.value)
                     {
-                        names[count]=result.value.NAME_ISO;
+                        if(result.value.NAME_3)
+                            names[count]=result.value.NAME_3;
+                        else if(result.value.NAME_2)
+                            names[count]=result.value.NAME_2;
+                        else if(result.value.NAME_1)
+                            names[count]=result.value.NAME_1;
+                        else if(result.value.NAME_0)
+                            names[count]=result.value.NAME_0;
                         count++;
                     }
                     if(!result.done){
