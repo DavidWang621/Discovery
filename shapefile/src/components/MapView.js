@@ -68,7 +68,7 @@ function MapView(props) {
                                 globalOptions={{
                                     continueDrawing: true,
                                     editable: false,
-                                    dragLayer: false,
+                                    limitMarkersToCount: 100
 
                                 }}
                                 onCreate={handleChange}
