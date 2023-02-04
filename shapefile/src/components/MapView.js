@@ -1,10 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { MapContainer, TileLayer, useMap, GeoJSON, LayerGroup } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, GeoJSON, LayerGroup, FeatureGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
+import 'leaflet-draw/dist/leaflet.draw.css';
+import { GeomanControls } from 'react-leaflet-geoman-v2'
 
 function MapView(props) {
     const [isPopup, setPopup] = useState(false);
+
+    if(props.file.features){
+        console.log(props.file.features)
+    }
 
     const nameChange = (event) => {
         let layer = event.target;
@@ -30,6 +35,9 @@ function MapView(props) {
         });
     };
 
+    const handleChange = (e) =>{
+        console.log(e)
+    }
 
     return (
         <div>
@@ -41,6 +49,34 @@ function MapView(props) {
                         style={{ height: "80vh" }} zoom={2} center={[20, 100]}
                         editable={true}
                     >
+                        <FeatureGroup>
+                                <GeoJSON
+                                    data={props.file.features}
+                                    onEachFeature={onEachCountry}
+                                />
+                            <GeomanControls
+                                options={{
+                                    position: 'topleft',
+                                    drawMarker: false,
+                                    drawText: false,
+                                    drawPolyline: false,
+                                    drawRectangle: false,
+                                    drawPolygon: false,
+                                    drawCircle: false,
+                                    drawCircleMarker:false
+                                }}
+                                globalOptions={{
+                                    continueDrawing: true,
+                                    editable: false,
+                                    dragLayer: false,
+
+                                }}
+                                onCreate={handleChange}
+                                onChange={(e) => console.log('onChange', e)}
+                            />
+                             
+                        </FeatureGroup>
+
                         <TileLayer url="xxx" />
 
                         <LayerGroup>
@@ -51,10 +87,10 @@ function MapView(props) {
                             <TileLayer url="http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png" />
                         </LayerGroup>
 
-                                <GeoJSON
+                                {/* <GeoJSON
                                     data={props.file.features}
                                     onEachFeature={onEachCountry}
-                                />
+                                /> */}
 
                     </MapContainer>
 
