@@ -17,17 +17,18 @@ function MapView(props) {
 
         let newCountry = prompt("Input new region name:", layer.feature.properties.name);
         props.changeName(layer.feature.properties.name, newCountry);
+        layer.bindPopup(newCountry)
         layer.bindTooltip(layer.feature.properties.name,
             {permanent: true, direction:"center",className: "label"}
-            ).openTooltip();
+        ).openTooltip();
     };
 
     const onEachCountry = (feature, layer) => {
         const countryName = feature.properties.name;
         layer.bindTooltip(layer.feature.properties.name,
-        {permanent: true, direction:"center",className: "label"}
+            {permanent: true, direction:"center",className: "label"}
         ).openTooltip();
-        // layer.bindPopup(countryName);
+        layer.bindPopup(countryName);
         layer.options.fillOpacity = 0.4;
 
         layer.on({
@@ -42,7 +43,7 @@ function MapView(props) {
     return (
         <div>
             {props.file.features ?
-            <div>
+                <div>
 
 
                     <MapContainer
@@ -50,10 +51,10 @@ function MapView(props) {
                         editable={true}
                     >
                         <FeatureGroup>
-                                <GeoJSON
-                                    data={props.file.features}
-                                    onEachFeature={onEachCountry}
-                                />
+                            <GeoJSON
+                                data={props.file.features}
+                                onEachFeature={onEachCountry}
+                            />
                             <GeomanControls
                                 options={{
                                     position: 'topleft',
@@ -68,13 +69,13 @@ function MapView(props) {
                                 globalOptions={{
                                     continueDrawing: true,
                                     editable: false,
-                                    limitMarkersToCount: 100
-
+                                    limitMarkersToCount: 100,
+                                    removeVertexOn: "contextmenu" //right click on verticies to remove
                                 }}
                                 onCreate={handleChange}
                                 onChange={(e) => console.log('onChange', e)}
                             />
-                             
+
                         </FeatureGroup>
 
                         <TileLayer url="xxx" />
@@ -87,7 +88,7 @@ function MapView(props) {
                             <TileLayer url="http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png" />
                         </LayerGroup>
 
-                                {/* <GeoJSON
+                        {/* <GeoJSON
                                     data={props.file.features}
                                     onEachFeature={onEachCountry}
                                 /> */}
@@ -95,24 +96,24 @@ function MapView(props) {
                     </MapContainer>
 
 
-                {/*<ReactLeafletEditable*/}
-                {/*    ref={editRef}*/}
-                {/*    map={map}*/}
-                {/*>*/}
-                {/*    <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]}*/}
-                {/*                  editable={true}>*/}
-                {/*        <GeoJSON*/}
-                {/*            data={props.file.features}*/}
-                {/*            onEachFeature={onEachCountry}*/}
-                {/*        />*/}
-                {/*    </MapContainer>*/}
-                {/*</ReactLeafletEditable>*/}
+                    {/*<ReactLeafletEditable*/}
+                    {/*    ref={editRef}*/}
+                    {/*    map={map}*/}
+                    {/*>*/}
+                    {/*    <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]}*/}
+                    {/*                  editable={true}>*/}
+                    {/*        <GeoJSON*/}
+                    {/*            data={props.file.features}*/}
+                    {/*            onEachFeature={onEachCountry}*/}
+                    {/*        />*/}
+                    {/*    </MapContainer>*/}
+                    {/*</ReactLeafletEditable>*/}
 
 
 
-            </div>
-            :
-            <></>
+                </div>
+                :
+                <></>
             }
         </div>
     )
