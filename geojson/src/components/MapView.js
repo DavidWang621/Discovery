@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, useMap, GeoJSON } from 'react-leaflet';
-import L from 'leaflet';
+import { MapContainer, GeoJSON } from 'react-leaflet';
+// import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 function MapView(props) {
@@ -34,7 +34,7 @@ function MapView(props) {
         <div>
             {props.file.features ?
             <div>
-                <MapContainer style={{ height: "80vh" }} zoom={2} center={[20, 100]} >
+                <MapContainer style={{ height: "80vh" }} zoom={2} center={[100, 100]}>
                     <GeoJSON 
                         data={props.file.features} 
                         onEachFeature={onEachCountry}

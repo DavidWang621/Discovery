@@ -31,7 +31,7 @@ function App() {
 
   return (
     <div className="App">
-      <div>Imput geo.json File</div>
+      <div>Input geo.json File</div>
       <input type="file" accept="geo.json" onChange={handleSelectFile}/>
       {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
     </div>
