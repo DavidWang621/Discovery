@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, useMap, GeoJSON, LayerGroup, FeatureGroup } fr
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { GeomanControls } from 'react-leaflet-geoman-v2'
-import {GeomanJsWrapper} from './GeomanJsWrapper'
+// import {GeomanJsWrapper} from './GeomanJsWrapper'
 
 function MapView(props) {
     const [isPopup, setPopup] = useState(false);
