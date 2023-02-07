@@ -6,6 +6,7 @@ import { GeomanControls } from 'react-leaflet-geoman-v2';
 // import { topojson } from 'topojson';
 import { topology } from 'topojson-server';
 import { merge as mergeRegion } from 'topojson-client';
+import * as turf from '@turf/turf'
 // import {GeomanJsWrapper} from './GeomanJsWrapper'
 
 function MapView(props) {
@@ -31,7 +32,7 @@ function MapView(props) {
         layer.bindTooltip(layer.feature.properties.name,
             {permanent: true, direction:"center",className: "label"}
         ).openTooltip();
-    };
+    }
 
     const onEachCountry = (feature, layer) => {
         const countryName = feature.properties.name;
@@ -53,17 +54,21 @@ function MapView(props) {
         layer.on({
             dblclick: nameChange.bind(this)
         });
-    };
-    const handleMerge =(e) => {
-        let region1 = regions[regions.length-1]
-        let region2 = regions[regions.length-2]
+    }
 
+    const handleMerge =(e) => {
+        let newName = prompt("enter new region name:");
+        if(newName == null){
+            return;
+        }
+        let region2 = regions[regions.length-1]
+        let region1 = regions[regions.length-2]
+        console.log("regions to merge", region1, region2);
         let region1Name = region1.properties.name
         let region2Name = region2.properties.name
 
         let allRegionArray = props.file.features
-        console.log("handle merge")
-        console.log(allRegionArray)
+        console.log("all regions before", allRegionArray)
 
         //this part is to remove the 2 existing region
         for(let i=0;i<allRegionArray.length;i++){
@@ -72,78 +77,31 @@ function MapView(props) {
             if(allRegionArray[i].properties.name === region2Name)
                 allRegionArray.splice(i,1)
         }
-
+        console.log("allregion", allRegionArray);
         //this will be our new combined region (we'll just add it to region1 ig
-        let combinedRegion = region1
-        combinedRegion.properties.name = region1.properties.name + region2.properties.name
-
-        // let combinedCoords= combinedRegion.geometry.coordinates
-        // let region2Coord= region2.geometry.coordinates
-
-        // ===========================================================================
-
-        // let topoAll = topology(props.file.features);
-        // console.log("topo of whole", props.file, topoAll);
-        // let topoRegion1 = topology(region1);
-        // let topoRegion2 = topology(region2);
-        console.log("trying to merge", region1, region2);
-        // console.log("topoversion", topoRegion1, topoRegion2);
-        // let arc1 = {type: topoRegion1.objects.geometry.type, arcs: topoRegion1.arcs}
-        // let arc2 = {type: topoRegion2.objects.geometry.type, arcs: topoRegion2.arcs}
-        // console.log("arcs", arc1, arc2);
-        // let mergedRegion = mergeRegion(topoAll, [arc1, arc2]);
-        // console.log("topomerge", mergedRegion);
-        // console.log(topoRegion1);
-
-        // ===========================================================================
-
-        // console.log("whole", allRegionArray);
-        // let arr1 = [];
-        // for(let arr of region1.geometry.coordinates){
-        //     // console.log(arr)
-        //     arr1 = arr1.concat(arr[0]);
-        // }
-        // let arr2 = [];
-        // for(let arr of region2.geometry.coordinates){
-        //     // console.log(arr)
-        //     arr2 = arr2.concat(arr[0]);
-        // }
-
-        // let coord1String = arr1.map(JSON.stringify);
-        // let coord2String = arr2.map(JSON.stringify);
-        // // console.log(coord1String);
-        // let coordSetString = new Set(coord1String.concat(coord2String));
-        // let coordSet = Array.from(coordSetString, JSON.parse);
-        // console.log([coordSet]);
-
-        // combinedRegion.geometry.coordinates = [coordSet];
-        // combinedRegion.geometry.type = "Polygon";
-
-        // ===========================================================================
-
-        // console.log(region2)
-        // console.log(region2Coord)
-        // console.log(region2Coord[0])
-        //TODO:
-        //do the polygon magics here
-        //merge by click on 2 country, and then click the merge button
-        //if you run this without adding anything it will just delete the first region
-        //and then create a new region with combined name
-        // for(let polygons of region2Coord){
-        //     console.log("this is 1 polygon")
-        //     console.log(polygons)
-        //     //do something like combinedCoords.push(polygons) the idea is there but it just didnt work
-        //     console.log("this is all of the 2d vec of that polygon")
-        //     // for(let coords of polygons){
-        //     //     console.log(coords)
-        //     // }
-        // }
-
-        //add the new combined region
-        allRegionArray.push(combinedRegion)
+        let poly1 = region1;
+        let poly2 = region2;
+        if(region1.geometry.type === "Polygon"){
+            poly1 = turf.polygon(region1.geometry.coordinates)
+        }
+        else{
+            poly1 = turf.multiPolygon(region1.geometry.coordinates)
+        }
+        if(region2.geometry.type === "Polygon"){
+            poly2 = turf.polygon(region2.geometry.coordinates)
+        }
+        else{
+            poly2 = turf.multiPolygon(region2.geometry.coordinates)
+        }
+        let union = turf.union(poly1, poly2);
+        // console.log(union);
+        union.properties.name = newName;
+   
+        allRegionArray.push(union);
         setUpdate(update+1) //absolutely crazy code but we need this to update the map
 
     }
+
     const handleCreate = (e) =>{
         console.log(e)
     }
