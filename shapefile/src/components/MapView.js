@@ -57,40 +57,49 @@ function MapView(props) {
     }
 
     const handleMerge =(e) => {
-        let newName = prompt("enter new region name:");
+        let region2 = regions[regions.length-1]
+        let region1 = regions[regions.length-2]
+        let region1Name = region1.properties.name
+        let region2Name = region2.properties.name
+
+        let newName = prompt("enter new region name:", region1Name);
         if(newName == null){
             return;
         }
-        let region2 = regions[regions.length-1]
-        let region1 = regions[regions.length-2]
         console.log("regions to merge", region1, region2);
-        let region1Name = region1.properties.name
-        let region2Name = region2.properties.name
 
         let allRegionArray = props.file.features
         console.log("all regions before", allRegionArray)
 
         //this part is to remove the 2 existing region
         for(let i=0;i<allRegionArray.length;i++){
-            if(allRegionArray[i].properties.name === region1Name)
+            if(allRegionArray[i].properties.name === region1Name){
                 allRegionArray.splice(i,1)
-            if(allRegionArray[i].properties.name === region2Name)
+                i--;
+            }
+            if(allRegionArray[i].properties.name === region2Name){
                 allRegionArray.splice(i,1)
+                i--;
+            }
         }
         console.log("allregion", allRegionArray);
         //this will be our new combined region (we'll just add it to region1 ig
         let poly1 = region1;
         let poly2 = region2;
         if(region1.geometry.type === "Polygon"){
+            console.log("region1 is polygon");
             poly1 = turf.polygon(region1.geometry.coordinates)
         }
         else{
+            console.log("region1 is multipolygon");
             poly1 = turf.multiPolygon(region1.geometry.coordinates)
         }
         if(region2.geometry.type === "Polygon"){
+            console.log("region2 is polygon");
             poly2 = turf.polygon(region2.geometry.coordinates)
         }
         else{
+            console.log("region2 is multipolygon");
             poly2 = turf.multiPolygon(region2.geometry.coordinates)
         }
         let union = turf.union(poly1, poly2);
@@ -99,7 +108,6 @@ function MapView(props) {
    
         allRegionArray.push(union);
         setUpdate(update+1) //absolutely crazy code but we need this to update the map
-
     }
 
     const handleCreate = (e) =>{
