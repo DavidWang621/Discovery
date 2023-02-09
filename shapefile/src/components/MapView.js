@@ -19,7 +19,6 @@ function MapView(props) {
     // if(props.file.features){
     //     console.log(props.file.features)
     // }
-    let count = 0;
 
     const nameChange = (event) => {
         let layer = event.target;
@@ -44,18 +43,30 @@ function MapView(props) {
         layer.options.fillOpacity = 0.4;
 
 
-
         layer.on('click', function (e) {
-            
+            for(let i=0; i<regionsClicked.length; i++){
+                if(e.target.feature.properties.name === regionsClicked[i].feature.properties.name){
+                    e.target.setStyle({
+                        // color: "blue",
+                        fillColor: "#3388ff",
+                        fillOpacity: 0.4,
+                    });
+                    regionsClicked.splice(i, 1);
+                    regions.splice(i, 1);
+                    return;
+                }
+            }
+
             e.target.setStyle({
                 // color: "blue",
                 fillColor: "#284dd4",
                 fillOpacity: 0.7,
             });
-            count++;
-            regions.push(e.target.feature);
             
-            if (count > 2) {
+            regions.push(e.target.feature);
+            regionsClicked.push(e.target);
+
+            if (regionsClicked.length > 2) {
                 regionsClicked[0].setStyle({
                     // color: "blue",
                     fillColor: "#3388ff",
@@ -63,9 +74,9 @@ function MapView(props) {
                 });
                
                 regionsClicked.splice(0, 1);
-                count = 2;
+                regions.splice(0,1);
             }
-            regionsClicked.push(e.target);
+
             console.log("select this country");
             console.log(regions)
             // props.file.features.pop()
