@@ -48,18 +48,18 @@ function MapView(props) {
         layer.on('click', function (e) {
             
             e.target.setStyle({
-                color: "blue",
+                // color: "blue",
                 fillColor: "#284dd4",
-                fillOpacity: 1,
+                fillOpacity: 0.7,
             });
             count++;
             regions.push(e.target.feature);
             
             if (count > 2) {
                 regionsClicked[0].setStyle({
-                    color: "blue",
-                    fillColor: "#a5c5f2",
-                    fillOpacity: 1,
+                    // color: "blue",
+                    fillColor: "#3388ff",
+                    fillOpacity: 0.4,
                 });
                
                 regionsClicked.splice(0, 1);
