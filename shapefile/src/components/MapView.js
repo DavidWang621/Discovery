@@ -57,10 +57,16 @@ function MapView(props) {
     }
 
     const handleMerge =(e) => {
+        if(regions.length<2){
+            alert("please select 2 regions first");
+            regions = [];
+            return;
+        }
         let region2 = regions[regions.length-1]
         let region1 = regions[regions.length-2]
         let region1Name = region1.properties.name
         let region2Name = region2.properties.name
+        regions = [];
 
         let newName = prompt("enter new region name:", region1Name);
         if(newName == null){
@@ -104,8 +110,9 @@ function MapView(props) {
         }
         let union = turf.union(poly1, poly2);
         // console.log(union);
+        union.properties = region1.properties;
         union.properties.name = newName;
-   
+        console.log(union);
         allRegionArray.push(union);
         setUpdate(update+1) //absolutely crazy code but we need this to update the map
     }
@@ -148,7 +155,8 @@ function MapView(props) {
                                     continueDrawing: true,
                                     editable: false,
                                     limitMarkersToCount: 50,
-                                    removeVertexOn: "contextmenu" //right click on verticies to remove
+                                    removeVertexOn: "contextmenu", //right click on verticies to remove
+                                    hideMiddleMarkers: true,
                                 }}
                                 onCreate={handleCreate}
                                 onChange={(e) => console.log('onChange', e)}
