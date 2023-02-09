@@ -13,16 +13,22 @@ function MapView(props) {
     const [isPopup, setPopup] = useState(false);
     const [update,setUpdate] = useState(1);
     let regions = []
+    let regionsClicked =[];
 
 
     // if(props.file.features){
     //     console.log(props.file.features)
     // }
+    let count = 0;
 
     const nameChange = (event) => {
         let layer = event.target;
         console.log(layer.feature.properties.name);
-
+         event.target.setStyle({
+      color: "green",
+      fillColor: this.state.color,
+      fillOpacity: 1,
+    });
         let newName = prompt("Input new region name:", layer.feature.properties.name);
         if(!newName){
             return;
@@ -45,7 +51,29 @@ function MapView(props) {
 
 
         layer.on('click', function (e) {
-            regions.push(e.target.feature)
+            
+            e.target.setStyle({
+            color: "blue",
+            fillColor: "green",
+            fillOpacity: 1,
+            });
+            count++;
+            regions.push(e.target.feature);
+            regionsClicked.push(e.target);
+            if(count>2){
+                regionsClicked[0].setStyle({
+                color: "blue",
+                fillColor: "#a5c5f2",
+                fillOpacity: 1,
+                });
+                regionsClicked[1].setStyle({
+                    color: "blue",
+                    fillColor: "#a5c5f2",
+                    fillOpacity: 1,
+                    });
+                regionsClicked.splice(0,2);
+                count = 1;
+            }
             console.log("select this country");
             console.log(regions)
             // props.file.features.pop()
