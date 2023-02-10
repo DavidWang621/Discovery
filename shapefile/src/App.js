@@ -14,7 +14,7 @@ function App() {
     const names = [];
     let count = 0;
     let shpfile = null;
-  let dbffile = null;
+    let dbffile = null;
 
 
     const readShapefile = (e) => {
@@ -43,9 +43,6 @@ function App() {
                         e.read().then(next)
                     }
                     else{
-                        console.log("done")
-                        console.log(JSON.stringify(empty))
-                        console.log(names);
                         setGeoJson(empty)
                         setFileExist(true);
                     }
@@ -91,17 +88,17 @@ function App() {
 
     const handleSubmit = (e) => {
         {
-          if(shpfile!=null&&dbffile!=null){
-            const reader = new FileReader();
-            setGeoJson({});
-            reader.readAsArrayBuffer(shpfile);
-            reader.onload = async e => {
-              await readShapefile(reader.result)
+            if (shpfile != null && dbffile != null){
+                const reader = new FileReader();
+                setGeoJson({});
+                reader.readAsArrayBuffer(shpfile);
+                reader.onload = async e => {
+                await readShapefile(reader.result)
+                }
+                console.log("shp file read");
             }
-            console.log("shp file read")
-          }
-          
-      }}
+        }
+    }
 
 
 
@@ -109,7 +106,7 @@ function App() {
         {
             shpfile = e.target.files[0];
       
-            console.log("shp file read")
+            console.log("shp file read");
         }
     }
     const handleSelectFile2 = (e) => {
@@ -118,11 +115,11 @@ function App() {
             //this is for shapefile
             const reader = new FileReader();
 
-            reader.readAsArrayBuffer(e.target.files[0])
+            reader.readAsArrayBuffer(e.target.files[0]);
             reader.onload = async e => {
                 await readShapefile2(reader.result)
             }
-            console.log("shp file read")
+            console.log("dbf file read");
         }
     }
 
@@ -148,17 +145,10 @@ function App() {
 
     return (
         <div className="App">
-            <button onClick={upload}>
+            {/* <button onClick={upload}>
                 Display North America geojson
-            </button>
+            </button> */}
 
-
-            <div>
-                upload geojson
-                <input type="file" accept="geo.json" onChange={handleSelectFile} />
-
-            </div>
-            <div>Upload Both dbf and shapefile and click submit.</div>
             <div>Shapefile: 
                 <input type="file" accept="geo.json" onChange={handleSelectFile}/>
             </div>
@@ -167,7 +157,7 @@ function App() {
 
             </div>
             <div></div>
-            <div> Submit: <input type="submit" value="submit" onClick={handleSubmit} /></div>
+            <div> <input type="submit" value="submit" onClick={handleSubmit} /></div>
 
 
             {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
