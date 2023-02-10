@@ -32,6 +32,7 @@ function MapView(props) {
         layer.bindTooltip(layer.feature.properties.name,
             {permanent: true, direction:"center",className: "label"}
         ).openTooltip();
+        setUpdate(update+1);
     }
 
     const onEachCountry = (feature, layer) => {
@@ -88,11 +89,11 @@ function MapView(props) {
     }
 
     const handleMerge =(e) => {
-        if(regions.length<2){
-            alert("please select 2 regions first");
-            regions = [];
-            return;
-        }
+        // if(regions.length<2){
+        //     alert("please select 2 regions first");
+        //     regions = [];
+        //     return;
+        // }
         let region2 = regions[regions.length-1]
         let region1 = regions[regions.length-2]
         let region1Name = region1.properties.name
@@ -112,11 +113,13 @@ function MapView(props) {
         for(let i=0;i<allRegionArray.length;i++){
             if(allRegionArray[i].properties.name === region1Name){
                 allRegionArray.splice(i,1)
-                i--;
+                if(i === 0)
+                    i--;
             }
             if(allRegionArray[i].properties.name === region2Name){
                 allRegionArray.splice(i,1)
-                i--;
+                if(i === 0)
+                    i--;
             }
         }
         console.log("allregion", allRegionArray);
@@ -185,7 +188,7 @@ function MapView(props) {
                                 globalOptions={{
                                     continueDrawing: true,
                                     editable: false,
-                                    limitMarkersToCount: 50,
+                                    limitMarkersToCount: 20,
                                     removeVertexOn: "contextmenu", //right click on verticies to remove
                                     hideMiddleMarkers: true,
                                 }}
