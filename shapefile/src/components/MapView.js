@@ -113,13 +113,10 @@ function MapView(props) {
         for(let i=0;i<allRegionArray.length;i++){
             if(allRegionArray[i].properties.name === region1Name){
                 allRegionArray.splice(i,1)
-                if(i === 0)
                     i--;
-            }
-            if(allRegionArray[i].properties.name === region2Name){
+            }else if(allRegionArray[i].properties.name === region2Name){
                 allRegionArray.splice(i,1)
-                if(i === 0)
-                    i--;
+                i--;
             }
         }
         console.log("allregion", allRegionArray);
