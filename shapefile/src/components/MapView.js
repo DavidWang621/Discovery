@@ -89,11 +89,11 @@ function MapView(props) {
     }
 
     const handleMerge =(e) => {
-        // if(regions.length<2){
-        //     alert("please select 2 regions first");
-        //     regions = [];
-        //     return;
-        // }
+         if(regions.length<2){
+             alert("please select 2 regions first");
+             regions = [];
+             return;
+         }
         let region2 = regions[regions.length-1]
         let region1 = regions[regions.length-2]
         let region1Name = region1.properties.name
