@@ -159,7 +159,7 @@ function App() {
             <div></div>
             <div> <input type="submit" value="submit" onClick={handleSubmit} /></div>
 
-
+            <div>Right click to delete vertex</div>
             {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
 
         </div>
