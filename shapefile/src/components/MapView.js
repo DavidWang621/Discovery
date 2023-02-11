@@ -92,6 +92,18 @@ function MapView(props) {
          if(regions.length<2){
              alert("please select 2 regions first");
              regions = [];
+             //regionsClicked = [];
+             if(regionsClicked.length>0){
+                regionsClicked[0].setStyle({
+                    // color: "blue",
+                    fillColor: "#3388ff",
+                    fillOpacity: 0.4,
+                });
+                regionsClicked.splice(0,1);
+                
+             }
+             console.log(regions);
+             console.log(regionsClicked);
              return;
          }
         let region2 = regions[regions.length-1]
