@@ -36,11 +36,33 @@ function MapView(props) {
     }
 
     const onEachCountry = (feature, layer) => {
-        const countryName = feature.properties.name;
+        const countryName = "";
+        if (feature.properties.NAME_3){
+            feature.properties.name = feature.properties.NAME_3;
+        }
+        else if (feature.properties.NAME_2){
+            feature.properties.name = feature.properties.NAME_2;
+        }
+        else if (feature.properties.NAME_1){
+            feature.properties.name = feature.properties.NAME_1;
+        }
+        else if (feature.properties.NAME_0){
+            feature.properties.name = feature.properties.NAME_0;
+        }
+            
+        
+        
         layer.bindTooltip(layer.feature.properties.name,
             {permanent: true, direction:"center",className: "label"}
         ).openTooltip();
-        layer.bindPopup(countryName);
+
+        let propString = ""
+        let propObj = feature.properties;
+        for(const property in propObj){
+            console.log(`${property}: ${propObj[property]}`);
+            propString += `${property}: ${propObj[property]}` +"<br>"
+        }
+        layer.bindPopup(propString,{});
         layer.options.fillOpacity = 0.4;
 
 

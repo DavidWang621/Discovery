@@ -12,12 +12,14 @@ function App() {
     const [data, setData] = React.useState([]);
 
     const names = [];
+    const properties =[];
     let count = 0;
     let shpfile = null;
     let dbffile = null;
 
 
     const readShapefile = (e) => {
+        console.log(properties);
         count = 0;
         //can only upload shp file but not zip file for now
         let res = [];
@@ -34,10 +36,13 @@ function App() {
                 function next(result){
                     if(result.value)
                     {
-                        result.value.properties.name = names[count];
+                        //result.value.properties.name = names[count];
+                        result.value.properties = properties[count];
+                        
                         count++;
                         // console.log(result.value);
                         empty.features.push(result.value)
+                        
                     }
                     if(!result.done){
                         e.read().then(next)
@@ -45,6 +50,7 @@ function App() {
                     else{
                         setGeoJson(empty)
                         setFileExist(true);
+                        console.log(empty);
                     }
                 })
         })
@@ -65,7 +71,7 @@ function App() {
                     console.log(result)
                     if(result.value)
                     {
-                        if(result.value.NAME_3)
+                       /* if(result.value.NAME_3)
                             names[count]=result.value.NAME_3;
                         else if(result.value.NAME_2)
                             names[count]=result.value.NAME_2;
@@ -73,6 +79,8 @@ function App() {
                             names[count]=result.value.NAME_1;
                         else if(result.value.NAME_0)
                             names[count]=result.value.NAME_0;
+                        count++;*/
+                        properties[count] = result.value;
                         count++;
                     }
                     if(!result.done){
