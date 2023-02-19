@@ -37,17 +37,19 @@ function MapView(props) {
 
     const onEachCountry = (feature, layer) => {
         const countryName = "";
-        if (feature.properties.NAME_3){
-            feature.properties.name = feature.properties.NAME_3;
-        }
-        else if (feature.properties.NAME_2){
-            feature.properties.name = feature.properties.NAME_2;
-        }
-        else if (feature.properties.NAME_1){
-            feature.properties.name = feature.properties.NAME_1;
-        }
-        else if (feature.properties.NAME_0){
-            feature.properties.name = feature.properties.NAME_0;
+        if (update == 1) {
+            if (feature.properties.NAME_3) {
+                feature.properties.name = feature.properties.NAME_3;
+            }
+            else if (feature.properties.NAME_2) {
+                feature.properties.name = feature.properties.NAME_2;
+            }
+            else if (feature.properties.NAME_1) {
+                feature.properties.name = feature.properties.NAME_1;
+            }
+            else if (feature.properties.NAME_0) {
+                feature.properties.name = feature.properties.NAME_0;
+            }
         }
             
         
