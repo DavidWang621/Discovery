@@ -9,7 +9,6 @@ function App() {
     const [GeoJson, setGeoJson] = useState({});
     const [state, setState] = useState(false);
 
-    const [data, setData] = React.useState([]);
 
     const names = [];
     const properties =[];
@@ -108,12 +107,9 @@ function App() {
         }
     }
 
-
-
     const handleSelectFile = (e) => {
         {
             shpfile = e.target.files[0];
-      
             console.log("shp file read");
         }
     }
@@ -151,22 +147,33 @@ function App() {
         setFileExist(true);
     }
 
+    const handleGeoJson = (e) => {
+        const reader = new FileReader();
+        setGeoJson({});
+        reader.readAsText(e.target.files[0]);
+        reader.onload = e => {
+            setGeoJson(JSON.parse(e.target.result));
+        }
+        setFileExist(true);
+    }
+
     return (
         <div className="App">
-            {/* <button onClick={upload}>
+             <button onClick={upload}>
                 Display North America geojson
-            </button> */}
+            </button>
 
-            <div>Shapefile: 
+            <div>Input geo.json File</div>
+            <input type="file" accept="geo.json" onChange={handleGeoJson}/>
+
+            <div>Shapefile:
                 <input type="file" accept="geo.json" onChange={handleSelectFile}/>
             </div>
             <div>Dbf: 
                 <input type="file" accept="geo.json" onChange={handleSelectFile2}/>
-
             </div>
             <div></div>
             <div> <input type="submit" value="submit" onClick={handleSubmit} /></div>
-
 
             {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
 
