@@ -1,129 +1,74 @@
-import React, { useState } from 'react';
+
+import React, { useState,useRef } from 'react';
 import MapView from './components/MapView';
 import * as shapefile from "shapefile";
 import na from './na.json'
-
+import { MapContainer, TileLayer,LayerGroup} from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 function App() {
-
+    const mapRef = useRef(null);
     const [fileExist, setFileExist] = useState(false);
     const [GeoJson, setGeoJson] = useState({});
     const [state, setState] = useState(false);
 
-    const [data, setData] = React.useState([]);
-
-    const names = [];
-    let count = 0;
     let shpfile = null;
     let dbffile = null;
+    const names = [];
+    const properties = [];
+    let count = 0;
 
 
-    const readShapefile = (e) => {
-        count = 0;
-        //can only upload shp file but not zip file for now
-        let res = [];
-        let empty = {}
-        empty.type = "FeatureCollection"
-        empty.features = res
-        shapefile
-            .open(
-                e,
-                //"https://cdn.rawgit.com/mbostock/shapefile/master/test/points.shp",
-                null
-            ).then(function (e){
-            e.read().then(
-                function next(result){
-                    if(result.value)
-                    {
-                        result.value.properties.name = names[count];
-                        count++;
-                        // console.log(result.value);
-                        empty.features.push(result.value)
-                    }
-                    if(!result.done){
-                        e.read().then(next)
-                    }
-                    else{
-                        setGeoJson(empty)
-                        setFileExist(true);
-                    }
-                })
-        })
-    }
-
-    const readShapefile2 = (e) => {
-        count = 0;
-        //can only upload shp file but not zip file for now
-
-        shapefile
-            .openDbf(
-                e,
-                //"https://cdn.rawgit.com/mbostock/shapefile/master/test/points.shp",
-                null
-            ).then(function (e){
-            e.read().then(
-                function next(result){
-                    console.log(result)
-                    if(result.value)
-                    {
-                        if(result.value.NAME_3)
-                            names[count]=result.value.NAME_3;
-                        else if(result.value.NAME_2)
-                            names[count]=result.value.NAME_2;
-                        else if(result.value.NAME_1)
-                            names[count]=result.value.NAME_1;
-                        else if(result.value.NAME_0)
-                            names[count]=result.value.NAME_0;
-                        count++;
-                    }
-                    if(!result.done){
-                        e.read().then(next)
-                    }
-                    else{
-                        console.log("done with name")
-                        console.log(names);
-                    }
-                })
-        })
-    }
-
-    const handleSubmit = (e) => {
+    const handleShpDbfFile = (e, type) => {
         {
-            if (shpfile != null && dbffile != null){
-                const reader = new FileReader();
-                setGeoJson({});
-                reader.readAsArrayBuffer(shpfile);
-                reader.onload = async e => {
-                await readShapefile(reader.result)
-                }
-                console.log("shp file read");
-            }
-        }
-    }
-
-
-
-    const handleSelectFile = (e) => {
-        {
-            shpfile = e.target.files[0];
-      
-            console.log("shp file read");
-        }
-    }
-    const handleSelectFile2 = (e) => {
-        {
-            dbffile = e.target.files[0];
-            //this is for shapefile
+            console.log("reading: " + type);
             const reader = new FileReader();
-
             reader.readAsArrayBuffer(e.target.files[0]);
             reader.onload = async e => {
-                await readShapefile2(reader.result)
+                if (type === "dbf")
+                    dbffile = reader.result
+                if (type === "shp")
+                    shpfile = reader.result
+                if (dbffile && shpfile) {
+                    console.log("done")
+                    handleSubmit()
+                }
             }
-            console.log("dbf file read");
         }
     }
 
-    const changeRegionName = (oldName, newName) =>{
+    const handleSubmit = () => {
+        setGeoJson({});
+        console.log("shapefile.open")
+        // console.log(shpfile)
+        // console.log(dbffile)
+
+        let geoJson = {
+            type: "FeatureCollection",
+            features: []
+        }
+        shapefile
+            .open(
+                shpfile,
+                dbffile
+            ).then(function (e) {
+                e.read().then(
+                    function next(result) {
+                        if (result.value) {
+                            // console.log(result.value);
+                            geoJson.features.push(result.value)
+                        }
+                        if (!result.done) {
+                            e.read().then(next)
+                        }
+                        else {
+                            setGeoJson(geoJson)
+                            setFileExist(true);
+                        }
+                    })
+            })
+    }
+
+    const changeRegionName = (oldName, newName) => {
         console.log("newold", oldName, newName);
         let temp = GeoJson;
         temp.features.forEach((i) => {
@@ -137,31 +82,61 @@ function App() {
     }
 
     const upload = () => {
-        console.log("upload the stuff")
+        console.log("upload the NA region ")
         console.log(na)
         setGeoJson(na);
         setFileExist(true);
     }
 
+    const handleGeoJson = (e) => {
+        const reader = new FileReader();
+        setGeoJson({});
+        reader.readAsText(e.target.files[0]);
+        reader.onload = e => {
+            setGeoJson(JSON.parse(e.target.result));
+        }
+        setFileExist(true);
+    }
+
     return (
         <div className="App">
-            {/* <button onClick={upload}>
+            <button onClick={upload}>
                 Display North America geojson
-            </button> */}
+            </button>
 
-            <div>Shapefile: 
-                <input type="file" accept="geo.json" onChange={handleSelectFile}/>
+            <div>
+                <div>
+                    <div>Input geo.json File</div>
+                    <input type="file" accept=".json" onChange={handleGeoJson} />
+                </div>
+                <div style={{ height: 1, width: "fill", backgroundColor: "black" }} />
+                <div>
+                    <div>Shapefile:
+                        <input type="file" accept=".shp" onChange={e => { handleShpDbfFile(e, "shp") }} />
+                    </div>
+                    <div>Dbf:
+                        <input type="file" accept=".dbf" onChange={e => { handleShpDbfFile(e, "dbf") }} />
+                    </div>
+                    {/*<div> <input type="submit" value="submit" onClick={handleSubmit} /></div>*/}
+                </div>
             </div>
-            <div>Dbf: 
-                <input type="file" accept="geo.json" onChange={handleSelectFile2}/>
+            <MapContainer
+                style={{ height: "80vh" }} zoom={2} center={[20, 100]}
+                editable={true}
+                ref={mapRef}
+            >
+                {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}  mapRef={mapRef} /> : <></>}
+                <TileLayer url="xxx" />
 
-            </div>
-            <div></div>
-            <div> <input type="submit" value="submit" onClick={handleSubmit} /></div>
+                <LayerGroup>
+                    <TileLayer
+                        attribution='&amp;copy <update href="http://osm.org/copyright">OpenStreetMap</update> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <TileLayer url="http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png" />
+                </LayerGroup>
 
-            <div>Right click to delete vertex</div>
-            {fileExist ? <MapView file={GeoJson} changeName={changeRegionName}/> : <></>}
-
+            </MapContainer>
         </div>
     );
 }
