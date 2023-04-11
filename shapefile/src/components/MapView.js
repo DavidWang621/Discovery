@@ -27,6 +27,7 @@ function MapView(props) {
     //     var lng = e.latlng.lng.toFixed(4);
     //     marker.bindPopup("Lat: " + lat + "<br>Lng: " + lng).openPopup();
     // });
+    
     const mapRef = props.mapRef
     const [isPopup, setPopup] = useState(false);
     const [update, setUpdate] = useState(1);
@@ -69,41 +70,7 @@ function MapView(props) {
         // If all elements match, the arrays are equal
         return true;
     }
-    // function updateDragOnGeoJSON(e) {
-    //     let newlatlng = e.target.getLatLngs();
-    //     let region = e.layer.feature;
-    //     if (e.layer._latlngs.length == 1) {
-    //         let polyCoords = [[]];
-
-    //         let latlng = e.layer._latlngs[0];
-    //         let first = [latlng[0].lng, latlng[0].lat];
-    //         for (let i = 0; i < latlng.length; i++) {
-    //             polyCoords[0].push([latlng[i].lng, latlng[i].lat]);
-    //         }
-    //         if ([latlng[latlng.length - 1].lng, latlng[latlng.length - 1].lat] !== first) {
-    //             polyCoords[0].push(first);
-    //         }
-    //         let region = e.layer.feature;
-    //         region.geometry.coordinates = polyCoords;
-
-    //     } else {
-
-    //         let polyCoords = [];
-    //         for (let j = 0; j < e.layer._latlngs.length; j++) {
-    //             polyCoords.push([[]]);
-    //             let latlng = e.layer._latlngs[j][0];
-    //             for (let i = 0; i < latlng.length; i++) {
-    //                 polyCoords[j][0].push([latlng[i].lng, latlng[i].lat]);
-    //             }
-    //         }
-    //         let region = e.layer.feature;
-    //         region.geometry.coordinates = polyCoords;
-    //     }
-    //     let allRegionArray = props.file.features;
-
-    //     props.file.features = [...allRegionArray, region]
-    //     setUpdate(update => update + 1);
-    // }
+   
 
     const handleMarkerDragEnd = (e) => {
         
