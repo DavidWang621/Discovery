@@ -121,7 +121,7 @@ function App() {
                 </div>
             </div>
             <MapContainer
-                style={{ height: "80vh" }} zoom={2} center={[20, 100]}
+                style={{ height: "70vh" }}sx={{marginTop:"30vh"}} zoom={2} center={[20, 100]}
                 editable={true}
                 ref={mapRef}
             >

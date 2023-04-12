@@ -35,6 +35,13 @@ function GeomanJsWrapper(props) {
                 props.toggleSelectMode()
             }
         });
+        map.pm.Toolbar.createCustomControl({
+            name: 'CompressButton',
+            block: 'edit',
+            onClick: ()=>{
+                props.compress()
+            }
+        });
             L.pm.addControls({
                 position: 'topleft',
                 drawMarker: false,

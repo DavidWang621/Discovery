@@ -16,18 +16,7 @@ import L from "leaflet";
 
 function MapView(props) {
     const map = useMap()
-    // var marker = L.marker([0, 0],{iconSize:[1,1]}).addTo(map);
 
-    // map.on('mousemove', function(e) {
-    //     // Update the marker position
-    //     marker.setLatLng(e.latlng);
-
-    //     // Show the coordinates in a popup above the marker
-    //     var lat = e.latlng.lat.toFixed(4);
-    //     var lng = e.latlng.lng.toFixed(4);
-    //     marker.bindPopup("Lat: " + lat + "<br>Lng: " + lng).openPopup();
-    // });
-    
     const mapRef = props.mapRef
     const [isPopup, setPopup] = useState(false);
     const [update, setUpdate] = useState(1);
@@ -38,7 +27,226 @@ function MapView(props) {
 
     const currentRegion = useRef("");
     //const context = useLeafletContext();
+    function handleCompress(){
+        console.log(props.file)
+        const map = new Map();
+        let removePattern = "Even"
+        let featureInd2 =-1
+        let ind0 = -1
+        let ind1 = -1
+        let ind2 = -1
+        let featuresCopy=props.file.features
+        
+        featuresCopy.forEach(feature => {
+            let prevMatchIndex = -1
+            let prevMatch = ""
+            let prevFeatureInd=-1
+            const map2 = new Map();
+            featureInd2++
+            if (feature.geometry.type === 'Polygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(coordinates => {
+                    ind0++;
+                    ind1 = -1;
+                    
+                        coordinates.forEach((coordinate, subInd) => {
+                            ind2++;
+                                if (!map.has(coordinate.toString())) {
+                                    map.set(coordinate.toString(), {position:"middle",featureInd:featureInd2});
+                                    if(prevMatchIndex==subInd-1){
+                                        
+                                        
+                                        if(map.has(prevMatch)){
+                                        let foundfeatureInd=map.get(prevMatch).featureInd;
+                                        map.set(prevMatch, {position:"last",featureInd:foundfeatureInd});
+                                    
+                                        
+                                        }
+                                    }
+                                }else{
+                                    let foundfeatureInd=map.get(coordinate.toString()).featureInd;
+                                    
+                                    if(!map2.has(foundfeatureInd.toString())){
+                                        map.set(coordinate.toString(), {position:"first",featureInd:foundfeatureInd});
+                                        map2.set(foundfeatureInd.toString(),1);
+                                        
+                                    }
+                                    if(prevFeatureInd !==foundfeatureInd){
+                                        map.set(prevMatch, {position:"last",featureInd:foundfeatureInd});
+                                        
+                                    }
+                                    
+                                    prevMatch= coordinate.toString()
+                                    prevMatchIndex = subInd
+                                    prevFeatureInd = foundfeatureInd    
+                                }
+                        });
+                    
+                });
+            } else if (feature.geometry.type === 'MultiPolygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(polygon => {
+                    ind0++;
+                    ind1 = -1;
+                    ind2 = -1;
+                    polygon.forEach(coordinates => {
+                        ind1++;
+                        ind2 = -1;
+                        
+                            coordinates.forEach((coordinate, subInd) => {
+                                ind2++;
+                                if (!map.has(coordinate.toString())) {
+                                    map.set(coordinate.toString(), {position:"middle",featureInd:featureInd2});
+                                    if(prevMatchIndex==subInd-1){
+                                        
+                                        
+                                        if(map.has(prevMatch)){
+                                        let foundfeatureInd=map.get(prevMatch).featureInd;
+                                        map.set(prevMatch, {position:"last",featureInd:foundfeatureInd});
+                                        }
+                                    }
+                                }else{
+                                    let foundfeatureInd=map.get(coordinate.toString()).featureInd;
+                                    
+                                    if(!map2.has(foundfeatureInd.toString())){
+                                        map.set(coordinate.toString(), {position:"first",featureInd:foundfeatureInd});
+                                        map2.set(foundfeatureInd.toString(),1);   
+                                    }
+                                    if(prevFeatureInd !==foundfeatureInd){
+                                        map.set(prevMatch, {position:"last",featureInd:foundfeatureInd});
+                                       
+                                    }
+                                    
+                                    prevFeatureInd = foundfeatureInd  
+                                    prevMatch= coordinate.toString()
+                                    prevMatchIndex = subInd
+                                }
+                            });
+                    });
+                });
+            }
 
+        });
+        featureInd2 = -1
+        const map3 = new Map();
+        featuresCopy.forEach(feature => {
+            featureInd2++
+            if (feature.geometry.type === 'Polygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(coordinates => {
+                    ind0++;
+                    ind1 = -1;
+                    
+                        coordinates.forEach((coordinate, subInd) => {
+                            ind1++;
+                            
+                            if (map3.has(coordinate.toString())) {
+                                
+                                if (subInd % 2 === 0) {
+                                    removePattern = "Even"
+                                } else {
+                                    removePattern = "Odd"
+                                    
+                                }
+                            }
+                            
+                            if (removePattern === "Even" && subInd % 2 === 0) {
+                                if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
+                                    props.file.features[featureInd2].geometry.coordinates[ind0][ind1]=[]
+                                map3.set(coordinate.toString(), true);
+                            } else if (removePattern === "Odd" && subInd % 2 !== 0) {
+                                if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
+                                    props.file.features[featureInd2].geometry.coordinates[ind0][ind1]=[]
+                                map3.set(coordinate.toString(), true);
+                            }
+                        });
+                    
+                });
+            } else if (feature.geometry.type === 'MultiPolygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(polygon => {
+                    ind0++;
+                    ind1 = -1;
+                    ind2 = -1;
+                    polygon.forEach(coordinates => {
+                        ind1++;
+                        ind2 = -1;
+                        
+                            coordinates.forEach((coordinate, subInd) => {
+                                ind2++;
+                                if (map3.has(coordinate.toString())) {
+                                    if (subInd % 2 === 0) {
+                                        removePattern = "Even"
+                                    } else {
+                                        removePattern = "Odd"
+                                    }
+                                }
+                                if (removePattern === "Even" && subInd % 2 === 0) {
+                                    map3.set(coordinate.toString(), true);
+                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
+                                        props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                } else if (removePattern === "Odd" && subInd % 2 !== 0) {
+                                    map3.set(coordinate.toString(), true);
+                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
+                                        props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                }
+                            });
+                        
+                    });
+                });
+            }
+
+        });
+
+        featureInd2 =-1
+        ind0 = -1
+        ind1 = -1
+        ind2 = -1
+        featuresCopy.forEach(feature => {
+            featureInd2++
+            if (feature.geometry.type === 'Polygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(coordinates => {
+                    ind0++;
+                    ind1 = -1;
+                    
+                    props.file.features[featureInd2].geometry.coordinates[ind0]=coordinates.filter(a=>a.length!==0)
+                    
+                    
+                });
+            } else if (feature.geometry.type === 'MultiPolygon') {
+                ind0 = -1
+                ind1 = -1
+                ind2 = -1
+                feature.geometry.coordinates.forEach(polygon => {
+                    ind0++;
+                    ind1 = -1;
+                    ind2 = -1;
+                    polygon.forEach(coordinates => {
+                        ind1++;
+                        ind2 = -1;
+                       
+                            props.file.features[featureInd2].geometry.coordinates[ind0][ind1]=coordinates.filter(a=>a.length!==0)     
+                        
+                    });
+                });
+            }
+
+        });
+    
+        setUpdate(update => update + 1);
+
+    }
     const nameChange = (event) => {
         let layer = event.target;
 
@@ -69,6 +277,15 @@ function MapView(props) {
 
         // If all elements match, the arrays are equal
         return true;
+    }
+    function updateLatlngDrag(featureInd2,ind0,ind1,ind2,newlatlng){
+        if(ind2==-1){
+            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][0]=newlatlng[0]
+            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][1]=newlatlng[1]
+        }else{
+            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2][0]=newlatlng[0]
+            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2][1]=newlatlng[1]
+        }
     }
    
 
@@ -126,8 +343,9 @@ function MapView(props) {
         let ind2 = -1
         let featureInd2 = -1
         let feature2coord =[]
+        let savedFeatureInd=[]
         const BreakError = {};
-        try {
+        // try {
             currentFeatures.forEach(feature => {
                 featureInd2++
                 // Check if the feature is a polygon or a multipolygon
@@ -146,7 +364,17 @@ function MapView(props) {
                             // Check if the coordinate matches the given coordinate
                             if (arraysEqual(coordinate, latlng) && feature.properties.name !== featureName) {
                                 console.log("Match found in feature: ", feature.properties.name);
-                                throw BreakError;
+                                //throw BreakError;
+                                
+                                if(!savedFeatureInd.includes(featureInd2)){
+                                    console.log(featureInd2)
+                                    updateLatlngDrag(featureInd2,ind0,ind1,ind2,newlatlng)
+                                    savedFeatureInd.push(featureInd2)
+                                }
+                                    
+                                ind0 = -1
+                                ind1 = -1
+                                ind2 = -1
                             }
                         });
                     });
@@ -170,7 +398,18 @@ function MapView(props) {
 
                                 if (arraysEqual(coordinate, latlng) && feature.properties.name !== featureName) {
                                     console.log("Match found in feature: ", feature.properties.name);
-                                    throw BreakError;
+                                    //throw BreakError;
+                                    
+                                
+                                    if(!savedFeatureInd.includes(featureInd2)){
+                                        console.log(featureInd2)
+                                        updateLatlngDrag(featureInd2,ind0,ind1,ind2,newlatlng)
+                                        savedFeatureInd.push(featureInd2)
+                                    }
+                                    
+                                    ind0 = -1
+                                    ind1 = -1
+                                    ind2 = -1
 
                                 }
                             });
@@ -180,17 +419,11 @@ function MapView(props) {
 
 
             });
-        } catch (err) {
-            if (err !== BreakError) throw err;
-        }
+        // } catch (err) {
+        //     if (err !== BreakError) throw err;
+        // }
    
-        if(ind2==-1){
-            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][0]=newlatlng[0]
-            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][1]=newlatlng[1]
-        }else{
-            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2][0]=newlatlng[0]
-            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2][1]=newlatlng[1]
-        }
+        
         if(index2==-1){
             props.file.features[featureInd].geometry.coordinates[index0][index1][0]=newlatlng[0]
             props.file.features[featureInd].geometry.coordinates[index0][index1][1]=newlatlng[1]
@@ -243,7 +476,7 @@ function MapView(props) {
 
 
         layer.on('click', function (e) {
-            console.log(e.target.getLatLngs());
+            console.log(e.target.feature);
             if (selectModeToggle.current) {
 
                 let regions = regionsSelectedRef.current
@@ -396,6 +629,13 @@ function MapView(props) {
 
     return (
         <div>
+            <div>
+            <button
+                        onClick={handleCompress
+                        }>
+                        Compress
+            </button>   
+            </div>
             {props.file.features ?
                 <div>
                     <button
@@ -403,10 +643,11 @@ function MapView(props) {
                         }>
                         merge your last 2 clicked regions
                     </button>
-
+                    
                     <GeomanJsWrapper
                         merge={handleMerge}
                         toggleSelectMode={toggleSelectMode}
+                        compress={handleCompress}
                     />
 
                     <FeatureGroup>
