@@ -28,7 +28,7 @@ function MapView(props) {
     const currentRegion = useRef("");
     //const context = useLeafletContext();
     function handleCompress(){
-        console.log(props.file)
+
         const map = new Map();
         let removePattern = "Even"
         let featureInd2 =-1
@@ -191,12 +191,16 @@ function MapView(props) {
                                 }
                                 if (removePattern === "Even" && subInd % 2 === 0) {
                                     map3.set(coordinate.toString(), true);
-                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
-                                        props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last"){
+                                        if(props.file.features[featureInd2].geometry.coordinates[ind0][ind1].length>1)
+                                            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                    }
                                 } else if (removePattern === "Odd" && subInd % 2 !== 0) {
                                     map3.set(coordinate.toString(), true);
-                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last")
-                                        props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                    if(map.get(coordinate.toString()).position !=="first" && map.get(coordinate.toString()).position !=="last"){
+                                        if(props.file.features[featureInd2].geometry.coordinates[ind0][ind1].length>1)
+                                            props.file.features[featureInd2].geometry.coordinates[ind0][ind1][ind2]=[]
+                                    }
                                 }
                             });
                         
